@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — June</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --paper-dark: #ede7df;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --scratch: #1a1210;
+    --fade: #9a8e86;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+    transition: background 6s, filter 6s;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* ── GAP NOTICE ── */
+  .gap-notice {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .archive-gap {
+    margin: 2.5rem 0 0;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule);
+    background: var(--paper-dark);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--fade);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .archive-gap::before {
+    content: '↑';
+    font-size: 1rem;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .post { flex: 1; min-width: 0; }
+
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ── PARAGRAPH DETERIORATION ── */
+  /* Each paragraph gets slightly more faded, spacing slightly looser */
+  .post p { margin-bottom: 1.4rem; }
+
+  .p-normal  { color: var(--ink); line-height: 1.85; }
+  .p-drift   { color: #3e3430; line-height: 1.95; letter-spacing: 0.005em; }
+  .p-far     { color: #524844; line-height: 2.1; letter-spacing: 0.012em; }
+  .p-fragment {
+    color: #6a5e58;
+    line-height: 2.3;
+    letter-spacing: 0.018em;
+    font-size: 0.97em;
+  }
+  .p-final {
+    color: #7a6e68;
+    line-height: 2.5;
+    letter-spacing: 0.025em;
+    font-size: 0.94em;
+    font-style: italic;
+  }
+
+  /* One-liner fragments get extra breathing room */
+  .one-liner {
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* ── PHOTO BLOCK ── */
+  .photo-block {
+    margin: 2rem 0;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .ceiling-photo {
+    width: 100%;
+    height: 230px;
+    position: relative;
+    overflow: hidden;
+    background: #c4bbb0;
+    cursor: default;
+  }
+
+  .ceiling-pixel-canvas {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(44, 1fr);
+    grid-template-rows: repeat(14, 1fr);
+    image-rendering: pixelated;
+  }
+
+  .px { transition: background 0.07s; }
+
+  /* The shadow glitch region — crosshair zone, bottom left */
+  .shadow-region {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    width: 120px;
+    height: 130px;
+    cursor: crosshair;
+    z-index: 10;
+  }
+
+  /* Scan line atmosphere */
+  .ceiling-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 12px,
+      rgba(0,0,0,0.02) 12px,
+      rgba(0,0,0,0.02) 13px
+    );
+    pointer-events: none;
+  }
+
+  .photo-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-light);
+    padding: 0.6rem 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ── PAST-TENSE PARAGRAPH (Glitch B) ── */
+  .past-tense-para {
+    position: relative;
+  }
+
+  .glitch-word {
+    cursor: crosshair;
+    display: inline;
+    transition: color 0.15s;
+    font-style: italic;
+    color: var(--ink);
+  }
+  .glitch-word em {
+    font-style: italic;
+  }
+  .glitch-word:hover { color: var(--accent); }
+  .glitch-word.spent { cursor: default; color: inherit; font-style: italic; }
+
+  /* ── SHADOW OVERLAY (full screen zoom) ── */
+  .shadow-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12,10,8,0.95);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+    cursor: pointer;
+  }
+
+  .shadow-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .shadow-close-view {
+    position: relative;
+    width: 280px;
+    height: 320px;
+    background: #1a1614;
+    overflow: hidden;
+  }
+
+  /* Zoomed ceiling, no light source visible */
+  .shadow-close-view::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #2a2420 0%, #1a1614 60%, #0e0c0a 100%);
+  }
+
+  /* The shadow, up close — now clearly shaped, clearly wrong */
+  .shadow-close-body {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 160px;
+    background: rgba(8,6,4,0.7);
+    border-radius: 50% 50% 35% 35%;
+    filter: blur(5px);
+  }
+
+  .shadow-close-head {
+    position: absolute;
+    bottom: calc(10% + 155px);
+    left: 50%;
+    transform: translateX(-60%);
+    width: 40px;
+    height: 42px;
+    background: rgba(8,6,4,0.65);
+    border-radius: 50%;
+    filter: blur(4px);
+  }
+
+  /* It has no feet. The shadow just ends. */
+
+  .shadow-detail {
+    position: absolute;
+    bottom: 2rem;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(180,160,140,0.25);
+  }
+
+  @keyframes shadow-breathe {
+    0%, 100% { transform: translateX(-50%) scaleY(1); }
+    50%       { transform: translateX(-50%) scaleY(1.015); }
+  }
+
+  .shadow-close-body {
+    animation: shadow-breathe 4s ease-in-out infinite;
+  }
+
+  /* ── NAV ── */
+  .post-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .post-nav a {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .post-nav a:hover { color: var(--ink); }
+
+  /* Next link starts hidden — appears only after scrolling through the whole post */
+  #nextLink {
+    opacity: 0;
+    transition: opacity 1.5s;
+    pointer-events: none;
+  }
+
+  #nextLink.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── PAST TENSE REVEAL ── */
+  @keyframes tense-shift {
+    0%   { opacity: 0; filter: blur(1.5px); letter-spacing: 0.06em; }
+    100% { opacity: 1; filter: blur(0); letter-spacing: inherit; }
+  }
+
+  .para-replaced {
+    animation: tense-shift 0.7s ease forwards;
+    font-style: italic;
+    color: var(--scratch);
+  }
+
+  /* ── PAGE DESATURATION as you scroll ── */
+  body.reading {
+    /* applied gradually via JS */
+  }
+
+
+  /* ── GLITCH LINKS (Gerald, my name) ── */
+  .glitch-link {
+    color: var(--ink);
+    text-decoration: none;
+    cursor: crosshair;
+    display: inline;
+  }
+  @keyframes link-glitch {
+    0%   { font-style: normal;  letter-spacing: 0em; }
+    55%  { font-style: normal;  letter-spacing: 0em; }
+    58%  { font-style: italic;  letter-spacing: 0.05em; }
+    61%  { font-style: normal;  letter-spacing: -0.02em; }
+    64%  { font-style: italic;  letter-spacing: 0.03em; }
+    67%  { font-style: normal;  letter-spacing: 0.01em; }
+    70%  { font-style: italic;  letter-spacing: 0em; }
+    73%  { font-style: normal;  letter-spacing: 0em; }
+    100% { font-style: normal;  letter-spacing: 0em; }
+  }
+  .glitch-link:hover {
+    text-decoration: none;
+    animation: link-glitch 1s ease-in-out infinite;
+  }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- Shadow overlay -->
+<div class="shadow-overlay" id="shadowOverlay">
+  <div class="shadow-close-view">
+    <div class="shadow-close-body"></div>
+    <div class="shadow-close-head"></div>
+    <div class="shadow-detail">click anywhere to close</div>
+  </div>
+</div>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+        <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Archive gap notice -->
+<div class="gap-notice">
+  <div class="archive-gap">
+    No posts between March 21 and June 18 &nbsp;—&nbsp; 88 days
+  </div>
+</div>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">18</span>
+      Jun<br>2024
+    </div>
+
+    <article class="post">
+      <div class="post-category">Still Here</div>
+      <h1>June</h1>
+      <div class="post-meta">by Mara &nbsp;·&nbsp; 6 readers</div>
+
+      <!-- PARAGRAPH 1 — Normal Mara, warm, cheerful -->
+      <p class="p-normal">Hi. I know it's been a while. I don't have a good explanation for that — or I do, but it's not very interesting, and I don't want to make a whole thing of it. I'm fine. Everything is fine. Summer came and I got busy and I forgot to write, the way you forget to call someone and then enough time passes that the call feels too big to make. Anyway. I'm making it.</p>
+
+      <!-- PARAGRAPH 2 — Still normal, almost performatively cheerful -->
+      <p class="p-normal"><a href="post4b.html" class="glitch-link" id="geraldLink">Gerald</a> is doing <em>incredibly</em> well, actually. Like suspiciously well. I don't know what I've been doing right but he's put out at least four new leaves since March. I keep meaning to photograph him to show the progress. I will. I keep meaning to.</p>
+
+      <!-- PHOTO: ceiling shot — the wrong shadow -->
+      <div class="photo-block">
+        <div class="ceiling-photo" id="ceilingPhoto">
+          <div class="ceiling-pixel-canvas" id="ceilingCanvas"></div>
+          <div class="shadow-region" id="shadowRegion" title=""></div>
+        </div>
+        <div class="photo-caption">living room, afternoon. I've been looking up a lot lately.</div>
+      </div>
+
+      <!-- PARAGRAPH 3 — GLITCH B: past tense, Mara's exact voice, already over -->
+      <p class="p-drift past-tense-para" id="pastTensePara">
+        <span id="ptNormal">The coffee shop was still there. I went every morning, same corner table, same order. It felt important to keep doing that — the routine of it, the proof that I was still someone who had routines. The barista learned <a href="post4b.html" class="glitch-link" id="nameLink">my name</a>. I remember thinking that was enough.</span>
+        <span id="ptReplaced" style="display:none;"></span>
+      </p>
+
+      <!-- PARAGRAPH 4 — Drift begins. Present tense but looser. -->
+      <p class="p-drift">The apartment is quieter in summer. The radiator stopped doing its thing. I don't miss it exactly, but I notice the absence. It's strange, how you adjust to a sound so completely that silence becomes the thing that wakes you up.</p>
+
+      <!-- PARAGRAPH 5 — One liner. First fragment. -->
+      <p class="p-fragment one-liner">I've been looking at the ceiling a lot. I don't know when that started.</p>
+
+      <!-- PARAGRAPH 6 — Another fragment, plant observation -->
+      <p class="p-fragment one-liner">Gerald keeps growing. I check on him every morning. I don't know what I'm checking for.</p>
+
+      <!-- PARAGRAPH 7 — The wrongness surfaces -->
+      <p class="p-far one-liner">There's nothing on the shelf where he sits. I see it clearly in the mirror. But when I walk over he's there, leaves and all, soil still damp. I stopped trying to figure out which one is true.</p>
+
+      <!-- PARAGRAPH 8 — Addressing herself in the past. Fragments now. -->
+      <p class="p-fragment one-liner">You should have noticed the ceiling sooner.</p>
+
+      <p class="p-fragment one-liner">You thought the building was just breathing. That's what you said. That's the word you used.</p>
+
+      <p class="p-fragment one-liner">The plant was already gone by then. You just couldn't see it yet.</p>
+
+      <!-- FINAL PARAGRAPH — Addressed to herself in the past. Ambiguous ending. -->
+      <p class="p-final one-liner" id="finalPara">
+        I think I'm writing this so you'll know what to look for. The shadow doesn't come from the light. It doesn't come from anything you can name. But it knew you were here before you did, and I think — I think it was waiting to see if you'd stay.<br><br>
+        You stayed.<br><br>
+        I'm sorry. I would have told you not to.
+      </p>
+
+      <!-- Navigation -->
+      <div class="post-nav">
+        <a href="post2.html">← Previous</a>
+        <a href="post4a.html" id="nextLink">Next entry →</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title">2 comments</div>
+
+        <div class="comment">
+          <div class="comment-author">lily_m <span class="timestamp">June 18 · 9:02 pm</span></div>
+          <p>mara!! wow you got so poetic out of nowhere... not complaining, it's beautiful, just — are you okay? like actually okay? 88 days is a long time to go quiet. glad you're back tho. we should really catch up soon, i feel like i haven't seen you in forever. coffee this week?</p>
+        </div>
+
+        <!-- The wrong comment — anon, but it knows -->
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 18 · 9:02 pm</span></div>
+          <p>you stayed.</p>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<script>
+  // ══════════════════════════════
+  // CEILING PIXEL ART — looking up, light fixture center, shadow bottom-left
+  // 44 cols × 14 rows
+  // ══════════════════════════════
+  (function() {
+    const canvas = document.getElementById('ceilingCanvas');
+    const COLS = 44, ROWS = 14;
+
+    const c = {
+      ceil:   '#cec8c0',  // base ceiling
+      ceilLt: '#dedad4',  // lighter ceiling near light
+      ceilSh: '#beb8b0',  // darker ceiling edges
+      fix:    '#e8e2d8',  // light fixture body
+      fixFr:  '#c8c0b4',  // fixture frame
+      cord:   '#b8b0a8',  // cord from ceiling
+      glow:   '#f0ece4',  // glow halo around fixture
+      shadow: '#b6b0a8',  // shadow body — 3 shades darker than ceiling
+      shadowM:'#aea8a0',  // shadow mid — 4 shades darker
+      shadowL:'#beb8b0',  // shadow edge — 2 shades darker (barely visible)
+      shdHead:'#a6a098',  // shadow head — 5 shades darker
+      floor:  '#c8bfb4',  // far edge at bottom
+    };
+
+    const scene = [];
+    for (let r = 0; r < ROWS; r++)
+      for (let col = 0; col < COLS; col++)
+        scene.push({ r, c: col, color: c.ceil });
+
+    function set(r, col, color) {
+      if (r >= 0 && r < ROWS && col >= 0 && col < COLS)
+        scene[r * COLS + col].color = color;
+    }
+    function fill(r1, c1, r2, c2, color) {
+      for (let r = r1; r <= r2; r++)
+        for (let col = c1; col <= c2; col++) set(r, col, color);
+    }
+
+    // Base ceiling — slightly varied
+    fill(0, 0, ROWS-1, COLS-1, c.ceil);
+
+    // Darker edges (corners feel further away)
+    for (let col = 0; col < 4; col++) fill(0, col, ROWS-1, col, c.ceilSh);
+    for (let col = COLS-4; col < COLS; col++) fill(0, col, ROWS-1, col, c.ceilSh);
+    fill(ROWS-3, 0, ROWS-1, COLS-1, c.ceilSh);
+
+    // Glow halo around center light (rows 0–4, cols 18–26)
+    fill(0, 17, 4, 27, c.glow);
+    fill(0, 19, 2, 25, c.fix);
+
+    // Light fixture body (row 1–2, cols 20–24)
+    fill(1, 20, 2, 24, c.fix);
+    fill(1, 20, 1, 24, c.fixFr);
+    fill(2, 20, 2, 24, c.fixFr);
+    set(1, 20, c.fixFr); set(1, 24, c.fixFr);
+
+    // Cord hanging down from fixture (col 22, rows 2–5)
+    fill(2, 22, 5, 22, c.cord);
+    set(5, 21, c.cord); set(5, 23, c.cord); // small bulge at bottom
+
+    // Subtle ceiling texture lines
+    for (let col = 0; col < COLS; col += 11) {
+      set(5, col, c.ceilSh);
+      set(9, col+3, c.ceilSh);
+    }
+
+    // ── THE WRONG SHADOW — bottom-left corner, lurking ──
+    // Shadow is humanoid: head + body, no feet, dark and wrong
+
+    // Head (rows 4–7, cols 2–6) — dark blob
+    fill(4, 3, 6, 6, c.shdHead);
+    set(4, 2, c.shadowM); set(4, 7, c.shadowM);
+    set(5, 2, c.shadowM); set(5, 7, c.shadowM);
+    set(3, 4, c.shadowM); set(3, 5, c.shadowM); // top of head
+
+    // Neck (row 7, cols 3–5)
+    fill(7, 3, 7, 5, c.shadow);
+
+    // Body (rows 7–13, cols 1–8) — wider than head, tapers at bottom
+    fill(7, 1, 10, 8, c.shadow);
+    fill(11, 2, 12, 7, c.shadowM);
+    fill(13, 3, 13, 6, c.shadowL);
+
+    // Arms suggested (rows 8–10)
+    fill(8, 0, 10, 0, c.shadowM);  // left arm
+    fill(8, 9, 9, 9, c.shadowM);   // right arm hint
+
+    // Edge fade — shadow bleeds into ceiling softly
+    for (let r = 4; r <= 13; r++) {
+      set(r, 0, c.shadowL);
+    }
+    set(6, 9, c.shadowL); set(7, 10, c.shadowL);
+    set(8, 10, c.shadowL); set(9, 9, c.shadowL);
+
+    // It has NO feet — the shadow just ends at row 13
+
+    // Render
+    scene.forEach(({ color }) => {
+      const cell = document.createElement('div');
+      cell.className = 'px';
+      cell.style.background = color;
+      canvas.appendChild(cell);
+    });
+
+    // Subtle ambient flicker
+    function flicker() {
+      const cells = canvas.children;
+      if (!cells.length) return;
+      const idx = Math.floor(Math.random() * cells.length);
+      const orig = cells[idx].style.background;
+      // Only flicker ceiling tiles, not shadow
+      if (orig !== c.shadow && orig !== c.shdHead) {
+        cells[idx].style.background = c.ceilSh;
+        setTimeout(() => { cells[idx].style.background = orig; }, 60);
+      }
+      setTimeout(flicker, 1200 + Math.random() * 3000);
+    }
+    setTimeout(flicker, 2500);
+  })();
+
+  // ══════════════════════════════
+  // TRACK WHICH GLITCHES FOUND
+  // ══════════════════════════════
+  let shadowFound = false;
+  let pastTenseFound = false;
+
+  // ══════════════════════════════
+  // GLITCH A — SHADOW CLICK → post4a.html
+  // ══════════════════════════════
+  const shadowRegion = document.getElementById('shadowRegion');
+  const shadowOverlay = document.getElementById('shadowOverlay');
+
+  shadowRegion.addEventListener('click', () => {
+    if (shadowFound) return;
+    shadowFound = true;
+
+    // Show the overlay first
+    shadowOverlay.classList.add('open');
+
+    // After player has seen it, close redirects to path A
+    shadowOverlay.addEventListener('click', () => {
+      shadowOverlay.classList.remove('open');
+      setTimeout(() => {
+        window.location.href = 'post4a.html';
+      }, 400);
+    }, { once: true });
+  });
+
+  // ══════════════════════════════
+  // GLITCH B — PAST TENSE WORD → post4b.html
+  // ══════════════════════════════
+  const ptNormal   = document.getElementById('ptNormal');
+  const ptReplaced = document.getElementById('ptReplaced');
+
+    // ══════════════════════════════
+  // NEXT LINK — appears after scrolling to final paragraph
+  // Default path: post4a.html
+  // ══════════════════════════════
+  const nextLink   = document.getElementById('nextLink');
+  const finalPara  = document.getElementById('finalPara');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          nextLink.classList.add('visible');
+        }, 1200);
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.6 });
+
+  observer.observe(finalPara);
+
+  // ══════════════════════════════
+  // PAGE DESATURATION — subtle, as you scroll deeper
+  // The further down the page, the slightly more muted/cool the body gets
+  // ══════════════════════════════
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    const warmth = Math.max(0, 1 - scrolled * 1.4);
+    // Shift from warm paper toward a cooler, slightly grey tone
+    const r = Math.round(247 - scrolled * 18);
+    const g = Math.round(243 - scrolled * 22);
+    const b = Math.round(238 - scrolled * 14);
+    document.body.style.background = `rgb(${r},${g},${b})`;
+  });
+
+  // ══════════════════════════════
+  // TAB TITLE DRIFT
+  // ══════════════════════════════
+  let titleDrifted = false;
+  setTimeout(() => {
+    if (!titleDrifted) {
+      titleDrifted = true;
+      document.title = 'Margin Notes — you stayed';
+      setTimeout(() => {
+        document.title = 'Margin Notes — June';
+      }, 3200);
+    }
+  }, 18000);
+
+  // Tab title also drifts when player reaches the final paragraph
+  observer.disconnect; // prevent double fire
+  const finalObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      setTimeout(() => {
+        document.title = 'Margin Notes — I would have told you not to';
+        setTimeout(() => { document.title = 'Margin Notes — June'; }, 4000);
+      }, 800);
+      finalObserver.disconnect();
+    }
+  }, { threshold: 0.8 });
+  finalObserver.observe(finalPara);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    const labels = {
+      'home':    'not found',
+      'about':   'Mara',
+      'archive': 'you stayed'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.textContent = label;
+        tooltip.classList.add('visible');
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

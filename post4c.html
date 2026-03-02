@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — Wrapping Up</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --paper-dark: #ede7df;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --fade: #9a8e86;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* The About link — the hidden glitch lives here.
+     Crosshair cursor, but only if the player thinks to hover it.
+     No other hint. */
+  #aboutLink {
+    cursor: crosshair;
+    transition: color 0.2s, letter-spacing 0.3s;
+  }
+
+  #aboutLink:hover {
+    color: var(--ink);
+    letter-spacing: 0.18em; /* barely perceptibly wrong on hover */
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .post { flex: 1; min-width: 0; }
+
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .post p {
+    margin-bottom: 1.4rem;
+    color: var(--ink);
+  }
+
+  /* Shadow voice — too resolved, no loose ends, no hesitation */
+  .shadow-voice {
+    color: #302824;
+    line-height: 1.82;
+    letter-spacing: 0.004em;
+  }
+
+  /* ── DELETION NOTICE — the blog signing off ── */
+  .deletion-notice {
+    margin: 2.5rem 0;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule);
+    background: var(--paper-dark);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--fade);
+    line-height: 1.7;
+  }
+
+  .deletion-notice strong {
+    font-weight: 400;
+    color: var(--ink-light);
+    display: block;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  .post-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+  }
+  .post-nav a {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .post-nav a:hover { color: var(--ink); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── ABOUT PAGE OVERLAY — the hidden glitch destination ── */
+  .about-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s;
+  }
+
+  .about-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .about-content {
+    max-width: 480px;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .about-content h2 {
+    font-family: 'Lora', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  /* The about page should be a normal "about" at first glance —
+     but the bio reads wrong, like someone describing Mara from outside */
+  .about-bio {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  /* The wrong line — past tense, clinical, final */
+  .about-wrong {
+    font-style: italic;
+    color: var(--ink);
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+  }
+
+  /* Hidden link inside the about page — takes to post5a */
+  .about-escape {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rule);
+    text-decoration: none;
+    cursor: crosshair;
+    transition: color 0.3s;
+  }
+
+  .about-escape:hover {
+    color: var(--accent);
+  }
+
+  .about-close {
+    display: block;
+    margin-top: 2.5rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rule);
+    cursor: pointer;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+  }
+
+  .about-close:hover { color: var(--ink-light); }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- About overlay — the hidden glitch -->
+<div class="about-overlay" id="aboutOverlay">
+  <div class="about-content">
+    <h2>About</h2>
+    <div class="about-bio">
+      <p>Mara is a writer living in the city. She started this blog in 2021 to keep track of small things — the kind that don't fit anywhere else.</p>
+      <p>She moved into her current apartment in March 2024.</p>
+      <span class="about-wrong">
+        She does not remember doing that.<br>
+        She has not been here for a long time.<br>
+        If you can read this, she is still inside.
+      </span>
+    </div>
+    <a href="post5a.html" class="about-escape">she needs help →</a>
+    <button class="about-close" id="aboutClose">close</button>
+  </div>
+</div>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+    <nav>
+      <a href="post1.html">Home</a>
+      <!-- The About link — crosshair cursor, reads as Mara instead of About -->
+      <a href="#" id="aboutLink">Mara</a>
+      <a href="#">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">25</span>
+      Jun<br>2024
+    </div>
+
+    <article class="post">
+      <div class="post-category">Moving On</div>
+      <h1>Wrapping Up</h1>
+      <div class="post-meta">by Mara &nbsp;·&nbsp; 6 readers</div>
+
+      <p class="shadow-voice">I've been thinking for a while now about whether to keep writing here. It started as a place to put small things down, the way you put keys on a hook by the door — just so you know where they are. But I don't think I need that anymore. I know where everything is.</p>
+
+      <p class="shadow-voice">The apartment is exactly how I want it. I stopped moving things around, which I used to do constantly in the first weeks — restless, adjusting, never quite right. Now everything is right. I walk through the rooms and they feel correct. I don't have another word for it. Correct.</p>
+
+      <p class="shadow-voice">I've been spending more time with Petra. She came by twice this week. She seems comfortable here now — she stays longer each visit, asks fewer questions. Last time she sat on the floor next to the shelf and didn't say anything for a while, and that was fine. It was good, actually. I think she's settling in too.</p>
+
+      <p class="shadow-voice">I went through the old posts this morning. There are some from the beginning that don't sound like me — too uncertain, too searching. I'm going to take them down. And then I think I'll take the rest down too. There's no reason to leave them up. They were for a version of this that I don't need to document anymore.</p>
+
+      <!-- The blog signing off -->
+      <div class="deletion-notice">
+        <strong>Note from the author</strong>
+        This blog will be set to private in the next few days. Thank you to everyone who read. It meant something, to know someone was here.
+      </div>
+
+      <p class="shadow-voice">I think that's it. I think I'm done. The apartment is quiet. Gerald is on the shelf. The light comes in from the west in the afternoon and turns everything the same color, the way it always has, and I stand in it for a while every day and feel nothing missing.</p>
+
+      <p class="shadow-voice">That's the right feeling. Nothing missing.</p>
+
+      <div class="post-nav">
+        <a href="post3.html">← Previous</a>
+        <a href="post5b.html">Next →</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title">3 comments</div>
+
+        <div class="comment">
+          <div class="comment-author">lily_m <span class="timestamp">June 25 · 6:48 pm</span></div>
+          <p>wait you're deleting everything?? mara no :( some of those early posts are so good. at least save them somewhere. also you seem really different lately, in a good way i think? idk. call me sometime</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 25 · 11:58 pm</span></div>
+          <p>cozy :)</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 25 · 11:58 pm</span></div>
+          <p>cozy :)</p>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<script>
+  // ══════════════════════════════════
+  // ABOUT LINK — the hidden glitch
+  // Crosshair cursor already in CSS
+  // ══════════════════════════════════
+  const aboutLink    = document.getElementById('aboutLink');
+  const aboutOverlay = document.getElementById('aboutOverlay');
+  const aboutClose   = document.getElementById('aboutClose');
+
+  aboutLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    aboutOverlay.classList.add('open');
+  });
+
+  aboutClose.addEventListener('click', () => {
+    aboutOverlay.classList.remove('open');
+  });
+
+  // Close on background click (outside content)
+  aboutOverlay.addEventListener('click', (e) => {
+    if (e.target === aboutOverlay) {
+      aboutOverlay.classList.remove('open');
+    }
+  });
+
+  // ══════════════════════════════════
+  // TAB TITLE DRIFT
+  // ══════════════════════════════════
+  let drifted = false;
+  setTimeout(() => {
+    if (!drifted) {
+      drifted = true;
+      document.title = 'Margin Notes — nothing missing';
+      setTimeout(() => {
+        document.title = 'Margin Notes — Wrapping Up';
+      }, 3500);
+    }
+  }, 20000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    const labels = {
+      'home':    'not found',
+      'mara':    'still here',
+      'archive': 'come back later'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.textContent = label;
+        tooltip.classList.add('visible');
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

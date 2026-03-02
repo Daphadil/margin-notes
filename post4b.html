@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — Archive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --paper-dark: #ede7df;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --fade: #9a8e86;
+    --wrong: #3a2a20;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* Archive link — this one works, and that's the problem */
+  #archiveLink {
+    cursor: pointer;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .post { flex: 1; min-width: 0; }
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+  }
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .post p { margin-bottom: 1.4rem; }
+
+  /* Mara's voice — confused, searching, but genuinely her */
+  .mara { color: var(--ink); line-height: 1.9; }
+
+  /* ── ARCHIVE PANEL ── */
+  .archive-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,16,14,0.96);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  .archive-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .archive-panel {
+    width: 560px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--paper);
+    padding: 2.5rem;
+    position: relative;
+  }
+
+  .archive-panel h2 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Archive year groupings */
+  .archive-year {
+    margin-bottom: 2rem;
+  }
+
+  .archive-year-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--rule);
+    margin-bottom: 0.8rem;
+  }
+
+  /* Normal entries — 2021 onwards */
+  .archive-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(217,208,197,0.4);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    color: var(--ink-light);
+  }
+
+  .archive-entry .entry-title {
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    font-weight: 400;
+  }
+
+  .archive-entry .entry-date {
+    font-size: 0.68rem;
+    font-weight: 300;
+    color: var(--rule);
+    white-space: nowrap;
+    margin-left: 1rem;
+  }
+
+  /* ── THE WRONG ENTRIES — before 2021 ── */
+  /* Separator — a visual crack in the archive */
+  .archive-crack {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px dashed var(--rule);
+    position: relative;
+  }
+
+  .archive-crack::after {
+    content: 'earlier entries';
+    position: absolute;
+    top: -0.55em;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--paper);
+    padding: 0 0.5rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rule);
+  }
+
+  /* Wrong entries — same format but the dates are wrong, the titles are almost right */
+  .archive-entry.wrong {
+    opacity: 0.7;
+  }
+
+  .archive-entry.wrong .entry-title {
+    color: var(--wrong);
+    font-style: italic;
+  }
+
+  .archive-entry.wrong .entry-date {
+    color: #c0a898;
+  }
+
+  /* The about panel — triggered from archive */
+  .about-reveal {
+    margin-top: 2rem;
+    padding: 1.2rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    background: var(--paper-dark);
+    display: none;
+  }
+
+  .about-reveal.shown { display: block; }
+
+  .about-reveal-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .about-reveal p {
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--wrong);
+    margin-bottom: 0.7rem;
+  }
+
+  .about-reveal p:last-child { margin-bottom: 0; }
+
+  /* The wrong about line — the revelation */
+  .about-wrong-line {
+    font-style: italic;
+    color: var(--accent);
+    font-size: 0.82rem;
+    display: block;
+    margin-top: 0.5rem;
+    line-height: 1.7;
+  }
+
+  .archive-close {
+    display: block;
+    margin-top: 2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fade);
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: color 0.2s;
+  }
+  .archive-close:hover { color: var(--ink); }
+
+  /* ── NAV ── */
+  .post-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+  }
+  .post-nav a {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .post-nav a:hover { color: var(--ink); }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── WRONG ENTRY CLICK — brief reveal ── */
+  .entry-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,16,14,0.85);
+    z-index: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    cursor: pointer;
+  }
+  .entry-flash.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .entry-flash-text {
+    max-width: 420px;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .entry-flash-date {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(217,208,197,0.4);
+    margin-bottom: 1.2rem;
+  }
+  .entry-flash-excerpt {
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: rgba(247,243,238,0.75);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
+  .entry-flash-close {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(217,208,197,0.3);
+  }
+
+  /* Mara's realization — appears after viewing wrong entries */
+  .realization {
+    margin-top: 2.5rem;
+    padding: 1.4rem 1.4rem 1.4rem 1.2rem;
+    border-left: 2px solid var(--accent);
+    display: none;
+    animation: realize-in 1s ease forwards;
+  }
+  .realization.shown { display: block; }
+
+  @keyframes realize-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .realization p {
+    font-style: italic;
+    color: var(--wrong);
+    font-size: 0.94em;
+    line-height: 1.95;
+    margin-bottom: 1rem;
+  }
+  .realization p:last-child { margin-bottom: 0; }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- Archive overlay -->
+<div class="archive-overlay" id="archiveOverlay">
+  <div class="archive-panel" id="archivePanel">
+    <h2>Archive — All Posts</h2>
+
+    <!-- 2024 entries — normal -->
+    <div class="archive-year">
+      <div class="archive-year-label">2024</div>
+      <div class="archive-entry">
+        <span class="entry-title">June</span>
+        <span class="entry-date">Jun 18, 2024</span>
+      </div>
+      <div class="archive-entry">
+        <span class="entry-title">Getting Settled</span>
+        <span class="entry-date">Mar 21, 2024</span>
+      </div>
+      <div class="archive-entry">
+        <span class="entry-title">New Place</span>
+        <span class="entry-date">Mar 14, 2024</span>
+      </div>
+    </div>
+
+    <!-- 2021–2023 entries — sparse, normal -->
+    <div class="archive-year">
+      <div class="archive-year-label">2021 — 2023</div>
+      <div class="archive-entry">
+        <span class="entry-title">october</span>
+        <span class="entry-date">Oct 3, 2023</span>
+      </div>
+      <div class="archive-entry">
+        <span class="entry-title">small update</span>
+        <span class="entry-date">Apr 12, 2022</span>
+      </div>
+      <div class="archive-entry">
+        <span class="entry-title">first post</span>
+        <span class="entry-date">Sep 1, 2021</span>
+      </div>
+    </div>
+
+    <!-- The crack -->
+    <hr class="archive-crack">
+
+    <!-- Wrong entries — before 2021, Mara's voice, wrong lives -->
+    <div class="archive-year">
+      <div class="archive-year-label">2019</div>
+      <div class="archive-entry wrong" data-excerpt="The apartment on Carver Street finally feels like mine. I moved the chair by the window and now the light hits it right in the mornings. I think I'm going to be very happy here." data-date="November 2, 2019">
+        <span class="entry-title">settled in</span>
+        <span class="entry-date">Nov 2, 2019</span>
+      </div>
+      <div class="archive-entry wrong" data-excerpt="Something is on the ceiling above the bed. I've been looking at it for three nights. I don't know how to describe the shape of it." data-date="December 14, 2019">
+        <span class="entry-title">can't sleep</span>
+        <span class="entry-date">Dec 14, 2019</span>
+      </div>
+      <div class="archive-entry wrong" data-excerpt="I'm not going to write about it. I'm just going to say: I understand now why the last tenant left everything behind." data-date="January 3, 2020">
+        <span class="entry-title">[untitled]</span>
+        <span class="entry-date">Jan 3, 2020</span>
+      </div>
+    </div>
+
+    <div class="archive-year">
+      <div class="archive-year-label">2015</div>
+      <div class="archive-entry wrong" data-excerpt="New city. New apartment. The ceilings are high and the afternoon light comes in from the west and turns everything the color of tea. I think I'm going to like it here." data-date="March 8, 2015">
+        <span class="entry-title">new place</span>
+        <span class="entry-date">Mar 8, 2015</span>
+      </div>
+      <div class="archive-entry wrong" data-excerpt="Gerald is doing well. I keep checking on him. I don't know what I'm checking for." data-date="May 22, 2015">
+        <span class="entry-title">the plant</span>
+        <span class="entry-date">May 22, 2015</span>
+      </div>
+      <div class="archive-entry wrong" data-excerpt="She is settled now. She has what she needs. She does not look at the ceiling anymore." data-date="September 1, 2015">
+        <span class="entry-title">[no title]</span>
+        <span class="entry-date">Sep 1, 2015</span>
+      </div>
+    </div>
+
+    <div class="archive-year">
+      <div class="archive-year-label">2009</div>
+      <div class="archive-entry wrong" data-excerpt="Moved in yesterday. Fourth floor. The radiator makes noise. I don't mind — city apartments are supposed to sound like something." data-date="October 17, 2009">
+        <span class="entry-title">moving day</span>
+        <span class="entry-date">Oct 17, 2009</span>
+      </div>
+      <div class="archive-entry wrong" data-excerpt="I called my mother. She asked if I'd met anyone. I said yes, a neighbor. She seemed surprised when I opened the door — just for a second, before she smiled." data-date="November 5, 2009">
+        <span class="entry-title">neighbors</span>
+        <span class="entry-date">Nov 5, 2009</span>
+      </div>
+    </div>
+
+    <!-- About revelation — shown after reading wrong entries -->
+    <div class="about-reveal" id="aboutReveal">
+      <div class="about-reveal-label">About — cached version</div>
+      <p>This is a place for small things. Started in 2021 by Mara, who moved to a new city and needed somewhere to put things down.</p>
+      <p>She is the sixth.</p>
+      <span class="about-wrong">
+        The blog was here before she was.<br>
+        It will be here after.<br>
+        It has always said this. She never read it.
+      </span>
+    </div>
+
+    <button class="archive-close" id="archiveClose">close archive</button>
+  </div>
+</div>
+
+<!-- Entry flash — shows excerpt from wrong entries -->
+<div class="entry-flash" id="entryFlash">
+  <div class="entry-flash-text">
+    <div class="entry-flash-date" id="flashDate"></div>
+    <div class="entry-flash-excerpt" id="flashExcerpt"></div>
+    <div class="entry-flash-close">click anywhere to close</div>
+  </div>
+</div>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+        <nav>
+      <a href="post1.html">Home</a>
+      <a href="#">About</a>
+      <a href="#" id="archiveLink">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">19</span>
+      Jun<br>2024
+    </div>
+
+    <article class="post">
+      <div class="post-category">Something Wrong</div>
+      <h1>I Need to Write This Down</h1>
+      <div class="post-meta">by Mara &nbsp;·&nbsp; 6 readers</div>
+
+      <p class="mara">I went into the archive today. I don't know what made me do it — I don't usually go back, I mostly just write forward and let the old posts sit. But I went back today and I found something that I need to write down before I convince myself I imagined it.</p>
+
+      <p class="mara">There are posts in the archive I didn't write.</p>
+
+      <p class="mara">Not all of them. The ones I recognize are mine — the ones from 2021, 2022, last year, this year. But there are others. Older ones. They go back to 2009. The voice is close to mine but not quite — like someone who read everything I've ever written and then tried to continue it. Or like something that was writing me, and kept writing when I wasn't there yet.</p>
+
+      <p class="mara">The details in them are wrong in the right ways. A fourth floor apartment. High ceilings. A plant. A neighbor who is surprised to see them at the door. One of the entries mentions a plant named Gerald.</p>
+
+      <p class="mara">I named him Gerald in March. I didn't tell anyone that. I didn't write it down until this blog.</p>
+
+      <!-- Realization — appears after player reads the wrong entries -->
+      <div class="realization" id="realization">
+        <p>I looked at the About page. The one I wrote when I started this, three years ago. The one I thought said: <em>"This is a place for small things. Started in 2021 by Mara, who moved to a new city and needed somewhere to put things down."</em></p>
+        <p>It doesn't say that. It has never said that. I don't know how I read it differently for three years. I don't know how I read it at all.</p>
+        <p>I think I have to leave. I think I have to leave right now, before I forget that I thought that.</p>
+        <p>I'm going to publish this and then I'm going to go.</p>
+      </div>
+
+      <div class="post-nav">
+        <a href="post3.html">← Previous</a>
+        <a href="post5a.html" id="nextLink" style="opacity:0.3; pointer-events:none;">Next →</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title">2 comments</div>
+
+        <div class="comment">
+          <div class="comment-author">lily_m <span class="timestamp">June 19 · 3:12 pm</span></div>
+          <p>mara this is freaking me out a little. are you okay? like genuinely. call me please</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 19 · 3:13 pm</span></div>
+          <p><a href="post5b.html" id="liesLink" style="cursor:crosshair;font-style:italic;color:inherit;text-decoration:none;"><em>lies.</em></a></p>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<script>
+  // ══════════════════════════════════
+  // ARCHIVE LINK
+  // ══════════════════════════════════
+  const archiveLink    = document.getElementById('archiveLink');
+  const archiveOverlay = document.getElementById('archiveOverlay');
+  const archiveClose   = document.getElementById('archiveClose');
+  const aboutReveal    = document.getElementById('aboutReveal');
+  const realization    = document.getElementById('realization');
+  const nextLink       = document.getElementById('nextLink');
+
+  let wrongEntriesRead = 0;
+  let realizationShown = false;
+
+  archiveLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    archiveOverlay.classList.add('open');
+  });
+
+  archiveClose.addEventListener('click', () => {
+    archiveOverlay.classList.remove('open');
+  });
+
+  // ══════════════════════════════════
+  // WRONG ENTRY CLICKS — each one opens a flash with the excerpt
+  // After reading 2, the About revelation appears
+  // After reading 3, Mara's realization appears on the main post
+  // ══════════════════════════════════
+  const entryFlash   = document.getElementById('entryFlash');
+  const flashDate    = document.getElementById('flashDate');
+  const flashExcerpt = document.getElementById('flashExcerpt');
+
+  document.querySelectorAll('.archive-entry.wrong').forEach(entry => {
+    entry.style.cursor = 'pointer';
+    entry.addEventListener('click', () => {
+      const excerpt = entry.dataset.excerpt;
+      const date    = entry.dataset.date;
+
+      flashDate.textContent    = date;
+      flashExcerpt.textContent = excerpt;
+      entryFlash.classList.add('open');
+
+      wrongEntriesRead++;
+
+      // After 2 wrong entries: show the About revelation
+      if (wrongEntriesRead === 2 && !aboutReveal.classList.contains('shown')) {
+        setTimeout(() => {
+          aboutReveal.classList.add('shown');
+          // Scroll to it
+          aboutReveal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 600);
+      }
+
+      // After 3 wrong entries: show Mara's realization on the post
+      // and unlock next link
+      if (wrongEntriesRead >= 3 && !realizationShown) {
+        realizationShown = true;
+        setTimeout(() => {
+          archiveOverlay.classList.remove('open');
+          entryFlash.classList.remove('open');
+          setTimeout(() => {
+            realization.classList.add('shown');
+            realization.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Unlock next
+            nextLink.style.opacity = '1';
+            nextLink.style.pointerEvents = 'all';
+            // Tab title
+            document.title = 'Margin Notes — she is the sixth';
+            setTimeout(() => {
+              document.title = 'Margin Notes — I Need to Write This Down';
+            }, 4000);
+          }, 500);
+        }, 1800);
+      }
+    });
+  });
+
+  // Close entry flash
+  entryFlash.addEventListener('click', () => {
+    entryFlash.classList.remove('open');
+  });
+
+  // ══════════════════════════════════
+  // Next link unlocks also after 8s
+  // (in case player doesn't read all wrong entries)
+  // ══════════════════════════════════
+  setTimeout(() => {
+    nextLink.style.opacity = '1';
+    nextLink.style.pointerEvents = 'all';
+  }, 8000);
+
+  // ══════════════════════════════════
+  // TAB TITLE DRIFT
+  // ══════════════════════════════════
+  let drifted = false;
+  setTimeout(() => {
+    if (!drifted) {
+      drifted = true;
+      document.title = 'Margin Notes — the blog was here before she was';
+      setTimeout(() => {
+        document.title = 'Margin Notes — I Need to Write This Down';
+      }, 4000);
+    }
+  }, 18000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS — post4b specific ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    // Glitchy "Mara" — cycles through corrupted versions
+    const maraGlitch = ['Mara', 'Mаra', 'Mąrą', 'Μara', 'Marа', 'Mara'];
+    let maraIdx = 0;
+    let maraTimer = null;
+
+    const labels = {
+      'home':    'no longer here',
+      'about':   'Mara',
+      'archive': 'I see you'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.classList.add('visible');
+
+        if (key === 'about') {
+          // Glitchy Mara — cycles through corrupted chars
+          maraIdx = 0;
+          tooltip.textContent = maraGlitch[0];
+          maraTimer = setInterval(() => {
+            maraIdx = (maraIdx + 1) % maraGlitch.length;
+            tooltip.textContent = maraGlitch[maraIdx];
+          }, 180);
+        } else {
+          tooltip.textContent = label;
+        }
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+        if (maraTimer) { clearInterval(maraTimer); maraTimer = null; }
+      });
+
+      // Archive click → post5b
+      if (key === 'archive') {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = 'post5b.html';
+        });
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

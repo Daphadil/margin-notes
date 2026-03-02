@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — Housewarming</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f4f0ea;
+    --paper-dark: #ebe4db;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --scratch: #1a1210;
+    --fade: #9a8e86;
+    --help: #6b0000;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .post { flex: 1; min-width: 0; }
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+  }
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .post p { margin-bottom: 1.4rem; }
+
+  /* ── SHADOW VOICE — slightly too still, no humor ── */
+  .shadow-voice {
+    color: #302824;
+    line-height: 1.82;
+    letter-spacing: 0.004em;
+  }
+
+  /* ── PIXEL PHOTO ── */
+  .photo-block {
+    margin: 2rem 0;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .pixel-photo {
+    width: 100%;
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+    background: #c0b8ae;
+    image-rendering: pixelated;
+  }
+
+  .pixel-canvas {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(48, 1fr);
+    grid-template-rows: repeat(18, 1fr);
+  }
+
+  .px { transition: background 0.06s; }
+
+  /* Scanlines */
+  .pixel-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 13px,
+      rgba(0,0,0,0.03) 13px, rgba(0,0,0,0.03) 14px
+    );
+    pointer-events: none;
+  }
+
+  /* White strike anomaly — right side of Mara's figure */
+  .white-strike {
+    position: absolute;
+    top: 15%;
+    right: 28%;
+    width: 3px;
+    height: 72%;
+    background: rgba(255,255,255,0.88);
+    filter: blur(0.5px);
+    pointer-events: none;
+    animation: strike-flicker 5s infinite;
+  }
+
+  @keyframes strike-flicker {
+    0%,100% { opacity: 0.88; width: 3px; }
+    30%      { opacity: 0.6;  width: 2px; }
+    31%      { opacity: 1;    width: 4px; }
+    32%      { opacity: 0.88; width: 3px; }
+    70%      { opacity: 0.75; }
+    71%      { opacity: 1; }
+  }
+
+  .photo-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-light);
+    padding: 0.6rem 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ── CLOSING 3RD-PERSON BLOCK ── */
+  .closing-block {
+    margin-top: 2.5rem;
+    padding: 1.4rem 1.4rem 1.4rem 1.2rem;
+    border-left: 2px solid var(--rule);
+    background: rgba(237,231,223,0.5);
+  }
+
+  .closing-block p {
+    font-size: 0.94em;
+    color: #3e3430;
+    line-height: 1.9;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.005em;
+  }
+
+  .closing-block p:last-child { margin-bottom: 0; }
+
+  /* ── HELP ME ── */
+  .help-me-para {
+    margin-top: 2rem;
+    margin-bottom: 1.4rem;
+  }
+
+  #helpMe {
+    color: var(--ink-light);
+    opacity: 0.22;          /* barely there */
+    font-size: 0.9em;
+    cursor: pointer;
+    display: inline;
+    text-decoration: none;
+    padding: 2px 1px;       /* keep hit area */
+    transition: opacity 0.3s;
+  }
+
+  /* On hover: vanishes visually, still clickable */
+  #helpMe.hovered {
+    opacity: 0 !important;
+  }
+
+  /* Goodbye comment — hidden until Mara is gone */
+  #goodbyeComment {
+    display: none;
+    opacity: 0;
+    transition: opacity 1.5s;
+  }
+
+  #goodbyeComment.visible {
+    display: block;
+    opacity: 1;
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  /* Goodbye comment styling — slightly different, final */
+  #goodbyeComment .comment-author { color: var(--fade); }
+  #goodbyeComment p {
+    color: var(--fade);
+    font-style: italic;
+  }
+
+  /* ── NAV ── */
+  .post-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+  }
+  .post-nav a {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .post-nav a:hover { color: var(--ink); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+        <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">29</span>
+      Jun<br>2024
+    </div>
+
+    <article class="post">
+      <div class="post-category">At Home</div>
+      <h1>Housewarming</h1>
+      <div class="post-meta">by Mara &nbsp;·&nbsp; 6 readers</div>
+
+      <!-- Shadow voice — too still, no warmth, no stumbling -->
+      <p class="shadow-voice">Petra came by on Saturday. I invited her to see the apartment. It felt like the right time — everything is in its place now. I have been here long enough to know where everything belongs.</p>
+
+      <p class="shadow-voice">She brought wine. I had already put two glasses on the table. She noticed that and smiled and said I was always prepared. I said yes. I am always prepared now.</p>
+
+      <p class="shadow-voice">I showed her the shelf. Gerald. The books. The mirror, which I turned back to face the room last week — it felt correct to do that. Petra looked at it for a moment longer than the other things. She didn't say anything about it. I didn't ask.</p>
+
+      <p class="shadow-voice">She asked if I was sleeping well. I told her better than ever. She said I seemed different. I asked if that was good. She said she wasn't sure yet and then laughed like it was a joke. I laughed too, at the right moment.</p>
+
+      <!-- PIXEL PHOTO of Mara & Petra -->
+      <div class="photo-block">
+        <div class="pixel-photo" id="pixelPhoto">
+          <div class="pixel-canvas" id="pixelCanvas"></div>
+          <div class="white-strike"></div>
+        </div>
+        <div class="photo-caption">Petra and me. The apartment is finally finished.</div>
+      </div>
+
+      <p class="shadow-voice">It was a good evening. Petra stayed for two hours and then said she had an early morning. I walked her to the door. She paused in the hallway and looked back once, at the ceiling. I waited. She left.</p>
+
+      <p class="shadow-voice">The apartment was quiet after. The good kind of quiet. Everything exactly where it should be. I stood in the middle of the living room for a while and looked at all of it — the shelf, Gerald, the mirror, the ceiling — and felt something that I think is satisfaction.</p>
+
+      <!-- help me — floats alone after the shadow's last paragraph -->
+      <p class="help-me-para"><span id="helpMe">help me</span></p>
+
+      <!-- Nav -->
+      <div class="post-nav">
+        <a href="post3.html">← Previous</a>
+        <a href="post4c.html" id="nextLink" style="opacity:0.3; pointer-events:none;">Next →</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title" id="commentCount">3 comments</div>
+
+        <div class="comment">
+          <div class="comment-author">lily_m <span class="timestamp">June 29 · 7:44 pm</span></div>
+          <p>this is so sweet!! petra is lovely. glad you two are getting close :)</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 29 · 11:58 pm</span></div>
+          <p>cozy :)</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">June 29 · 11:58 pm</span></div>
+          <p>cozy :)</p>
+        </div>
+
+        <!-- Goodbye comment — appears when Mara is gone, timestamp from reader's device -->
+        <div class="comment" id="goodbyeComment">
+          <div class="comment-author">anon <span class="timestamp" id="goodbyeTimestamp"></span></div>
+          <p>goodbye, Mara.</p>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<script>
+  // ══════════════════════════════════
+  // PIXEL PHOTO — Mara & Petra, pixelated
+  // Two standing figures, warm room, white strike on right side of left figure
+  // ══════════════════════════════════
+  const canvas = document.getElementById('pixelCanvas');
+  const COLS = 48, ROWS = 18;
+
+  const p = {
+    wall:     '#c8bfb4',
+    wallLt:   '#d4ccc0',
+    floor:    '#b8aa9c',
+    shadow:   '#a89888',
+    // Petra (left figure)
+    petHair:  '#4a3828',
+    petSkin:  '#d4a882',
+    petShirt: '#6a7888',
+    petPant:  '#3a3430',
+    // Mara (right figure)
+    marHair:  '#2a2018',
+    marSkin:  '#c89870',
+    marShirt: '#887060',
+    marPant:  '#2a2420',
+    // Room details
+    shelf:    '#a89878',
+    book1:    '#8a7060',
+    book2:    '#507048',
+    plant:    '#6a9060',
+    pot:      '#a08070',
+    mirror:   '#b8c8c8',
+    mirFrm:   '#887868',
+    table:    '#9a8878',
+    wine:     '#6a2030',
+    glass:    '#c8d8d0',
+  };
+
+  const scene = Array.from({ length: ROWS * COLS }, (_, i) => ({
+    r: Math.floor(i / COLS),
+    c: i % COLS,
+    color: p.wall
+  }));
+
+  function set(r, c, color) {
+    if (r >= 0 && r < ROWS && c >= 0 && c < COLS)
+      scene[r * COLS + c].color = color;
+  }
+  function fill(r1, c1, r2, c2, color) {
+    for (let r = r1; r <= r2; r++)
+      for (let c = c1; c <= c2; c++)
+        set(r, c, color);
+  }
+
+  // Wall
+  fill(0, 0, 12, 47, p.wall);
+  for (let c = 0; c < 48; c += 6) set(4, c, p.wallLt);
+
+  // Floor
+  fill(13, 0, 17, 47, p.floor);
+  fill(12, 0, 12, 47, p.shadow);
+
+  // Shelf (background, right side)
+  fill(5, 30, 5, 44, p.shelf);
+  fill(6, 30, 6, 44, '#9a8a70');
+  // Books on shelf
+  fill(2, 31, 5, 32, p.book1);
+  fill(3, 33, 5, 34, p.book2);
+  fill(2, 35, 5, 36, p.book1);
+  // Plant on shelf
+  fill(3, 40, 5, 42, p.plant);
+  fill(5, 40, 5, 42, p.pot);
+  set(2, 41, p.plant); set(1, 41, '#507040');
+
+  // Mirror on wall
+  fill(1, 24, 6, 28, p.mirFrm);
+  fill(2, 25, 5, 27, p.mirror);
+  set(2, 25, '#d0e0e0'); // glint
+
+  // Table (foreground center)
+  fill(11, 16, 12, 32, p.table);
+  fill(12, 17, 12, 31, '#887868');
+  // Wine glasses on table
+  fill(10, 19, 11, 19, p.glass);
+  fill(10, 22, 11, 22, p.glass);
+  set(11, 19, p.wine); set(11, 22, p.wine);
+
+  // ── PETRA (left figure, cols 6–12) ──
+  // Head
+  fill(4, 7, 5, 9, p.petSkin);
+  set(4, 8, p.petHair); set(3, 7, p.petHair);
+  set(3, 8, p.petHair); set(3, 9, p.petHair);
+  set(4, 10, p.petHair);
+  // Body
+  fill(6, 6, 9, 11, p.petShirt);
+  set(6, 8, p.petSkin); // neck
+  // Arms
+  fill(6, 5, 8, 5, p.petShirt);
+  fill(6, 12, 8, 12, p.petShirt);
+  set(9, 5, p.petSkin); set(9, 12, p.petSkin); // hands
+  // Legs
+  fill(10, 7, 12, 8, p.petPant);
+  fill(10, 10, 12, 11, p.petPant);
+  // Feet
+  set(13, 7, p.petPant); set(13, 11, p.petPant);
+
+  // ── MARA (right figure, cols 18–24) ──
+  // Head
+  fill(4, 19, 5, 21, p.marSkin);
+  set(3, 18, p.marHair); set(3, 19, p.marHair);
+  set(3, 20, p.marHair); set(3, 21, p.marHair);
+  set(3, 22, p.marHair); set(4, 22, p.marHair);
+  set(4, 18, p.marHair);
+  // Body
+  fill(6, 18, 9, 22, p.marShirt);
+  set(6, 20, p.marSkin); // neck
+  // Arms
+  fill(6, 17, 8, 17, p.marShirt);
+  fill(6, 23, 8, 23, p.marShirt);
+  set(9, 17, p.marSkin); set(9, 23, p.marSkin);
+  // Legs
+  fill(10, 19, 12, 20, p.marPant);
+  fill(10, 22, 12, 22, p.marPant);
+  // Feet
+  set(13, 19, p.marPant); set(13, 22, p.marPant);
+
+  // Render
+  scene.forEach(({ color }) => {
+    const cell = document.createElement('div');
+    cell.className = 'px';
+    cell.style.background = color;
+    canvas.appendChild(cell);
+  });
+
+  // Subtle random flicker
+  function flicker() {
+    const cells = canvas.children;
+    const idx = Math.floor(Math.random() * cells.length);
+    const orig = cells[idx].style.background;
+    cells[idx].style.background = '#b0a89e';
+    setTimeout(() => { cells[idx].style.background = orig; }, 60);
+    setTimeout(flicker, 600 + Math.random() * 2000);
+  }
+  setTimeout(flicker, 2000);
+
+  // ══════════════════════════════════
+  // HELP ME — hover suppresses, click saves her
+  // ══════════════════════════════════
+  const helpMe  = document.getElementById('helpMe');
+  const nextLink = document.getElementById('nextLink');
+  const goodbyeComment = document.getElementById('goodbyeComment');
+  const commentCount   = document.getElementById('commentCount');
+
+  let goneTimer = null;
+  let maraGone  = false;
+
+  // Unlock next link after a moment
+  setTimeout(() => {
+    nextLink.style.opacity = '1';
+    nextLink.style.pointerEvents = 'all';
+  }, 3000);
+
+  // ── HOVER: visually hide but keep clickable ──
+  helpMe.addEventListener('mouseenter', () => {
+    if (maraGone) return;
+    helpMe.classList.add('hovered');
+
+    // Start 10-second countdown to losing Mara
+    goneTimer = setTimeout(() => {
+      maraIsGone();
+    }, 10000);
+  });
+
+  helpMe.addEventListener('mouseleave', () => {
+    if (maraGone) return;
+    helpMe.classList.remove('hovered');
+    clearTimeout(goneTimer);
+  });
+
+  // ══════════════════════════════════
+  // HELP ME — character glitch cycle (Cyrillic, Polish, Greek, italic)
+  // ══════════════════════════════════
+  const helpMeEl = document.getElementById('helpMe');
+
+  // Text variants — unicode lookalikes + italic toggled via innerHTML
+  const helpVariants = [
+    'help me',
+    'hеlp mе',
+    'hęlp mę',
+    '<i>hеlp</i> me',
+    'hεlp mε',
+    'hеlρ mе',
+    '<i>help</i> mę',
+    'hęlρ <i>me</i>',
+    'hеļp mе',
+    'help me',
+  ];
+  let helpIdx = 0;
+  // Start cycling immediately
+  setInterval(() => {
+    helpIdx = (helpIdx + 1) % helpVariants.length;
+    helpMeEl.innerHTML = helpVariants[helpIdx];
+  }, 180);
+
+  // ── CLICK: save Mara → post5a ──
+  helpMe.addEventListener('click', () => {
+    if (maraGone) return;
+    clearTimeout(goneTimer);
+
+    // Brief red flash, then navigate
+    helpMe.style.animation = 'none';
+    helpMe.style.opacity   = '1';
+    helpMe.style.color     = '#cc0000';
+    helpMe.style.transition = 'opacity 0.2s';
+
+    setTimeout(() => { window.location.href = 'post5a.html'; }, 500);
+  });
+
+  // ── MARA IS GONE ──
+  function maraIsGone() {
+    if (maraGone) return;
+    maraGone = true;
+
+    // Permanently hide "help me"
+    helpMe.style.animation  = 'none';
+    helpMe.style.opacity    = '0';
+    helpMe.style.transition = 'opacity 0.6s';
+    helpMe.style.pointerEvents = 'none';
+
+    // Build real timestamp from reader's device
+    const now = new Date();
+    const timeStr = now.toLocaleString('en-US', {
+      month: 'long', day: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+      hour12: true
+    });
+    document.getElementById('goodbyeTimestamp').textContent = timeStr;
+
+    // Fade in goodbye comment
+    setTimeout(() => {
+      goodbyeComment.style.display = 'block';
+      commentCount.textContent = '4 comments';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        goodbyeComment.classList.add('visible');
+      }));
+    }, 1000);
+
+    // Next goes to unaware ending
+    nextLink.href = 'post4c.html';
+
+    // Tab title
+    setTimeout(() => {
+      document.title = 'Margin Notes — goodbye, Mara';
+      setTimeout(() => { document.title = 'Margin Notes — Housewarming'; }, 4000);
+    }, 1800);
+  }
+
+  // ══════════════════════════════════
+  // TAB TITLE DRIFT
+  // ══════════════════════════════════
+  let titleDrifted = false;
+  setTimeout(() => {
+    if (!titleDrifted && !maraGone) {
+      titleDrifted = true;
+      document.title = 'Margin Notes — she laughed at the right moment';
+      setTimeout(() => { document.title = 'Margin Notes — Housewarming'; }, 3500);
+    }
+  }, 22000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS — post4a specific ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    // Make tooltip clickable for "about"
+    tooltip.style.pointerEvents = 'none';
+    document.body.appendChild(tooltip);
+
+    const labels = {
+      'home':    'not found',
+      'about':   'help me',
+      'archive': 'no longer here'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.textContent = label;
+        tooltip.classList.add('visible');
+        // About tooltip becomes clickable
+        if (key === 'about') {
+          tooltip.style.pointerEvents = 'all';
+          tooltip.style.cursor = 'pointer';
+          tooltip.style.borderColor = 'rgba(139,58,58,0.4)';
+        }
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+        tooltip.style.pointerEvents = 'none';
+        tooltip.style.cursor = 'default';
+        tooltip.style.borderColor = '';
+      });
+
+      // About nav click → post5a
+      if (key === 'about') {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = 'post5a.html';
+        });
+      }
+    });
+
+    // Tooltip itself clickable when showing "help me"
+    tooltip.addEventListener('click', () => {
+      if (tooltip.textContent === 'help me') {
+        window.location.href = 'post5a.html';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

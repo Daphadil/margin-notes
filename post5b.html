@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — a place for small things</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --paper-dark: #ede7df;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --fade: #9a8e86;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .post { flex: 1; min-width: 0; }
+
+  /* No category label, no title — just meta and text */
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* The only content — two words, centered, unhurried */
+  .cozy-text {
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.85;
+    margin-bottom: 1.4rem;
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  /* lily_m's comment — slightly more urgent, still contained */
+  .comment.urgent {
+    border-left-color: #c0a898;
+  }
+  .comment.urgent p {
+    color: #4a3e38;
+  }
+
+  /* ── ENDING CARD ── */
+  .ending-card {
+    margin-top: 5rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  .ending-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rule);
+    margin-bottom: 1rem;
+  }
+
+  .ending-title {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--fade);
+    margin-bottom: 0.5rem;
+  }
+
+  .ending-note {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: var(--rule);
+    letter-spacing: 0.06em;
+    margin-bottom: 2rem;
+  }
+
+  .restart-link {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .restart-link:hover {
+    color: var(--ink);
+    border-color: var(--ink-light);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── PAGE ENTRANCE — fades in slowly, unhurried ── */
+  .post-wrapper {
+    animation: page-settle 2.5s ease forwards;
+  }
+
+  @keyframes page-settle {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* cozy text — no animation, just present */
+  .cozy-text {
+    opacity: 1;
+  }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+        <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">29</span>
+      Jul<br>2024
+    </div>
+
+    <article class="post">
+
+      <!-- No category. No title. Just the date and byline. -->
+      <div class="post-meta">by <span id="byMara">Mara</span> &nbsp;·&nbsp; 6 readers</div>
+
+      <!-- The entire post -->
+      <p class="cozy-text">cozy :)</p>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title">1 comment</div>
+
+        <div class="comment urgent">
+          <div class="comment-author">lily_m <span class="timestamp">July 30 · 11:23 am</span></div>
+          <p>
+            mara please pick up your phone. i've been calling since last week and it keeps going straight to voicemail. i'm really worried about you — this isn't like you, you always answer eventually.<br><br>
+            i didn't know what else to do so i called the police for a welfare check on tuesday. they went to the building but they said they couldn't find your apartment. i don't understand that. i gave them the address you sent me when you moved in. they said no one by your name is listed there.<br><br>
+            i don't know if you're reading this but if you are please just leave a comment or send me anything. you don't even have to explain. just let me know you're okay.<br><br>
+            please call me back, mara. i'm still here.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Ending card -->
+      <div class="ending-card">
+        <div class="ending-label">Ending</div>
+        <div class="ending-title">Unaware</div>
+        <div class="ending-note">You read the blog. You didn't look closely enough.</div>
+        <a href="post1.html" class="restart-link">begin again →</a>
+      </div>
+
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<script>
+  // Tab title — the last thing the blog says
+  setTimeout(() => {
+    document.title = 'Margin Notes — cozy :)';
+  }, 2000);
+
+  // After a long idle, the tab title changes one final time and stays
+  setTimeout(() => {
+    document.title = 'Margin Notes — a place for small things';
+  }, 12000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS + BY MARA GLITCH — post5b ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    // Corrupted Mara variants — Cyrillic, Polish, Greek lookalikes
+    // Full glitch cycle — Cyrillic, Polish, Greek lookalikes + italic toggling (for span only)
+    const maraGlitchText = [
+      'Mara',
+      'Mаrа',
+      'Mąrą',
+      'MΑrα',
+      'Мара',
+      'Mаŕа',
+      'Mąřа',
+      'Marа',
+      'MΑŕą',
+      'Mara',
+    ];
+    // For the span we also toggle italic
+    const maraGlitchHTML = [
+      'Mara',
+      'M<i>а</i>rа',
+      'Mą<i>r</i>ą',
+      '<i>MΑ</i>rα',
+      'М<i>a</i>rа',
+      'Mаŕ<i>а</i>',
+      '<i>M</i>ąřа',
+      'Mar<i>а</i>',
+      'MΑŕ<i>ą</i>',
+      '<i>Mara</i>',
+    ];
+    let tooltipMaraTimer = null;  // for About nav tooltip only
+    let maraIdx = 0;
+    let byMaraIdx = 0;
+
+    function startMaraGlitch(el, useHTML) {
+      // Continuous loop for byMara — uses its own interval, never cleared
+      byMaraIdx = 0;
+      if (useHTML) el.innerHTML = maraGlitchHTML[0];
+      else el.textContent = maraGlitchText[0];
+      setInterval(() => {
+        byMaraIdx = (byMaraIdx + 1) % maraGlitchText.length;
+        if (useHTML) el.innerHTML = maraGlitchHTML[byMaraIdx];
+        else el.textContent = maraGlitchText[byMaraIdx];
+      }, 180);
+    }
+
+    function stopMaraGlitch(el, useHTML) {
+      if (tooltipMaraTimer) { clearInterval(tooltipMaraTimer); tooltipMaraTimer = null; }
+      if (useHTML) el.innerHTML = 'Mara';
+      else el.textContent = 'Mara';
+    }
+
+    // "by Mara" in post-meta — glitches continuously, no interaction needed
+    const byMara = document.getElementById('byMara');
+    if (byMara) {
+      byMara.style.cursor = 'default';
+      startMaraGlitch(byMara, true);
+    }
+
+    const labels = {
+      'home':    'not found',
+      'archive': '404 error'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+
+      link.addEventListener('mouseenter', (e) => {
+        if (key === 'about') {
+          maraIdx = 0;
+          tooltip.textContent = maraGlitchText[0];
+          tooltip.classList.add('visible');
+          tooltipMaraTimer = setInterval(() => {
+            maraIdx = (maraIdx + 1) % maraGlitchText.length;
+            tooltip.textContent = maraGlitchText[maraIdx];
+          }, 180);
+        } else if (labels[key]) {
+          tooltip.textContent = labels[key];
+          tooltip.classList.add('visible');
+        }
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+        if (key === 'about' && tooltipMaraTimer) {
+          clearInterval(tooltipMaraTimer); tooltipMaraTimer = null;
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

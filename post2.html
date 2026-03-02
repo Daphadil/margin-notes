@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes — Getting Settled</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --paper-dark: #ede7df;
+    --accent: #8b3a3a;
+    --rule: #d9d0c5;
+    --scratch: #1a1210;
+    --glitch-blue: #4a8fa8;
+    --glitch-red: #a84a4a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--ink); }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--paper-dark);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .post { flex: 1; min-width: 0; }
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .post p { margin-bottom: 1.4rem; }
+  .post p:last-of-type { margin-bottom: 0; }
+
+  /* ── PIXEL GRID PHOTO ── */
+  .photo-block {
+    margin: 2rem 0;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .pixel-photo {
+    width: 100%;
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    background: #c8bfb4;
+    cursor: default;
+  }
+
+  /* The pixel grid — CSS only, drawn with box-shadow mosaic */
+  .pixel-canvas {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(40, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+  }
+
+  .px {
+    transition: background 0.08s;
+  }
+
+  /* Ambient CSS glitch scanline */
+  .pixel-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 14px,
+      rgba(0,0,0,0.025) 14px,
+      rgba(0,0,0,0.025) 15px
+    );
+    pointer-events: none;
+  }
+
+  /* Mirror region — the clickable anomaly */
+  .mirror-region {
+    position: absolute;
+    top: 28%;
+    right: 18%;
+    width: 64px;
+    height: 80px;
+    cursor: crosshair;
+    z-index: 10;
+    border: 1px solid rgba(180,160,140,0.3);
+    background: rgba(180,170,160,0.15);
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .mirror-region:hover {
+    background: rgba(180,170,160,0.3);
+    border-color: rgba(180,160,140,0.6);
+  }
+
+  /* Mirror glitch pulse — very subtle, only on hover */
+  @keyframes mirror-pulse {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 0 1px rgba(74,143,168,0.4); }
+  }
+  .mirror-region:hover {
+    animation: mirror-pulse 1.2s infinite;
+  }
+
+  .photo-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-light);
+    padding: 0.6rem 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ── MIRROR OVERLAY (full screen zoom) ── */
+  .mirror-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,16,14,0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    cursor: pointer;
+  }
+
+  .mirror-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .mirror-frame {
+    width: 320px;
+    height: 400px;
+    border: 2px solid #4a3a30;
+    position: relative;
+    overflow: hidden;
+    background: #1a1614;
+  }
+
+  /* The "empty room" inside the mirror — CSS drawn */
+  .mirror-scene {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #1e1a18;
+  }
+
+  /* Back wall */
+  .mirror-scene::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 0; bottom: 25%;
+    background: #252018;
+  }
+
+  /* Floor */
+  .mirror-scene::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 25%;
+    background: #1a1612;
+  }
+
+  .mirror-window {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 110px;
+    background: #0d1820;
+    border: 1px solid #2a2218;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+  }
+
+  .mirror-window::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: #2a2218;
+  }
+
+  .mirror-window::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 1px;
+    background: #2a2218;
+  }
+
+  /* Shelf — empty */
+  .mirror-shelf {
+    position: absolute;
+    bottom: 30%;
+    left: 15%;
+    width: 65%;
+    height: 3px;
+    background: #2e2620;
+  }
+
+  /* The wrongness: faint outline where the plant SHOULD be */
+  .mirror-ghost-plant {
+    position: absolute;
+    bottom: 31%;
+    right: 20%;
+    width: 18px;
+    height: 24px;
+    border: 1px solid rgba(80,100,70,0.12);
+    border-radius: 50% 50% 0 0;
+    opacity: 0;
+    animation: ghost-appear 1.8s ease 0.6s forwards;
+  }
+
+  @keyframes ghost-appear {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .mirror-close-hint {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(180,160,140,0.35);
+  }
+
+  /* RGB-split glitch on mirror frame */
+  @keyframes rgb-split {
+    0%, 90%, 100% { 
+      text-shadow: none;
+      transform: none; 
+    }
+    91% { transform: translateX(-2px); filter: hue-rotate(90deg); }
+    92% { transform: translateX(2px); filter: hue-rotate(-90deg); }
+    93% { transform: none; filter: none; }
+  }
+
+  .mirror-frame {
+    animation: rgb-split 7s infinite 2s;
+  }
+
+  /* ── GLITCH WORD — matches Post 1 "ordinary" style ── */
+  .glitch-word {
+    cursor: crosshair;
+    position: relative;
+    display: inline;
+    color: var(--ink);
+    animation: word-glitch 2s ease-in-out infinite;
+  }
+
+  @keyframes word-glitch {
+    0%   { font-style: normal;  letter-spacing: 0em; }
+    55%  { font-style: normal;  letter-spacing: 0em; }
+    58%  { font-style: italic;  letter-spacing: 0.05em; }
+    61%  { font-style: normal;  letter-spacing: -0.02em; }
+    64%  { font-style: italic;  letter-spacing: 0.03em; }
+    67%  { font-style: normal;  letter-spacing: 0.01em; }
+    70%  { font-style: italic;  letter-spacing: 0em; }
+    73%  { font-style: normal;  letter-spacing: 0em; }
+    100% { font-style: normal;  letter-spacing: 0em; }
+  }
+
+  .glitch-word:hover {
+    text-decoration: underline;
+    text-decoration-color: rgba(42,36,32,0.3);
+    text-underline-offset: 3px;
+  }
+
+  /* After click — stays italic, stops animating */
+  .glitch-word.clicked {
+    animation: none;
+    font-style: italic;
+    cursor: default;
+    color: var(--ink);
+  }
+
+  /* ── GLITCH TEXT WORD ── */
+  .glitch-word {
+    cursor: crosshair;
+    display: inline;
+    transition: color 0.15s;
+  }
+  .glitch-word:hover { color: var(--accent); }
+
+  .glitch-word.clicked {
+    cursor: default;
+    color: var(--ink);
+  }
+
+  /* The replacement sentence — fades in wrong */
+  .sentence-normal { display: inline; }
+  .sentence-replaced {
+    display: none;
+    color: var(--scratch);
+    font-style: italic;
+    animation: text-wrong 0.5s ease forwards;
+  }
+  .sentence-replaced.show { display: inline; }
+  .sentence-normal.hide { display: none; }
+
+  @keyframes text-wrong {
+    0%   { opacity: 0; letter-spacing: 0.08em; filter: blur(1px); }
+    100% { opacity: 1; letter-spacing: normal; filter: blur(0); }
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  .post-nav {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+  }
+  .post-nav a {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .post-nav a:hover { color: var(--ink); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── STATE: after both glitches found ── */
+  .found-indicator {
+    position: fixed;
+    top: 1.2rem;
+    right: 1.5rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(90,70,60,0.3);
+    z-index: 500;
+    transition: opacity 1s;
+  }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+  /* ── HINT TOAST ── */
+  .hint-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    padding: 0.55rem 1.1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s, transform 0.5s;
+    z-index: 2000;
+  }
+  .hint-toast.show {
+    opacity: 0.85;
+    transform: translateX(-50%) translateY(0);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Mirror overlay -->
+<div class="mirror-overlay" id="mirrorOverlay">
+  <div class="mirror-frame">
+    <div class="mirror-scene">
+      <div class="mirror-window"></div>
+      <div class="mirror-shelf"></div>
+      <div class="mirror-ghost-plant"></div>
+    </div>
+    <div class="mirror-close-hint">click anywhere to close</div>
+  </div>
+</div>
+
+<div class="found-indicator" id="foundIndicator"></div>
+
+<header>
+  <div class="container">
+    <div class="blog-title">Margin Notes</div>
+    <div class="blog-subtitle">a place for small things</div>
+        <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="post-wrapper">
+
+    <div class="date-strip">
+      <span class="day">21</span>
+      Mar<br>2024
+    </div>
+
+    <article class="post">
+      <div class="post-category">Week One</div>
+      <h1>Getting Settled</h1>
+      <div class="post-meta">by Mara &nbsp;·&nbsp; 4 min read &nbsp;·&nbsp; 6 readers</div>
+
+      <p>A week in. The boxes are almost gone. I found a coffee shop four minutes from here that plays music quietly enough that you can actually think, which I consider a moral achievement on their part. I've been there every morning.</p>
+
+      <p>I bought a plant — a small pothos, very hard to kill apparently, which is the only kind of plant I'm qualified to own. I put it on the shelf in the living room next to a few books and the little oval mirror I've had since college. It looked nice enough that I took a photo.</p>
+
+      <!-- PIXEL GRID PHOTO -->
+      <div class="photo-block">
+        <div class="pixel-photo" id="pixelPhoto">
+          <div class="pixel-canvas" id="pixelCanvas"></div>
+          <!-- Mirror region — the glitch hotspot -->
+          <div class="mirror-region" id="mirrorRegion" title=""></div>
+        </div>
+        <div class="photo-caption">the shelf. the plant is named Gerald provisionally.</div>
+      </div>
+
+      <p>The building is noisier at night than I expected. Not loud — more like it breathes. Radiator ticks, the elevator hum, something that might be pipes or might be upstairs neighbors doing whatever upstairs neighbors do at 2am. I don't mind. City apartments are supposed to sound like something.</p>
+
+      <p>I called my mom on Tuesday. She asked if I'd met anyone yet and I said yes, a neighbor named Petra who gave me honey. My mom said "that's not what I meant" and I said "I know." Standard Tuesday.</p>
+
+      <p>I've been sleeping well, actually. Better than I did in the old place. I don't
+        <!-- Glitch 2: the Cyrillic 'а' is invisible to the eye but wrong — JS will target this span -->
+        <span class="sentence-normal" id="sentenceNormal">remember my dreаms, which is new for me — I used to always remember them.</span><span class="sentence-replaced" id="sentenceReplaced">think I sleep at all. I think I just stop, and then start again.</span>
+      I'm choosing to see that as progress.</p>
+
+      <p>Anyway. Week one: fine. Better than fine. <span class="glitch-word" id="glitchWord">Quiet</span>, mostly.</p>
+
+      <div class="post-nav">
+        <a href="post1.html">← Previous</a>
+        <a href="post3.html">Next entry →</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments">
+        <div class="comments-title">5 comments</div>
+
+        <div class="comment">
+          <div class="comment-author">lily_m <span class="timestamp">March 21 · 8:14 pm</span></div>
+          <p>Gerald!! perfect name. does he have a last name yet?</p>
+        </div>
+
+        <div class="comment" style="margin-left:1.5rem; border-left-color:#c8bfb4;">
+          <div class="comment-author">mara <span class="timestamp">March 21 · 9:02 pm</span></div>
+          <p>no last name yet, but i figure he can pick his own when he's older. honestly he already seems pretty settled in — more than me, if i'm being honest. i keep moving things around trying to figure out where everything belongs but he just sits on the shelf like he's always been there. maybe he knows something i don't lol. come see him sometime, i feel like you two would get along</p>
+        </div>
+
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">March 21 · 11:58 am</span></div>
+          <p>cozy :)</p>
+        </div>
+
+        <!-- The wrong comment: timestamp is before the post was published -->
+        <div class="comment">
+          <div class="comment-author">anon <span class="timestamp">March 20 · 3:44 am</span></div>
+          <p>the shelf looks different in person</p>
+        </div>
+
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+  </div>
+</footer>
+
+<div class="hint-toast" id="shelfToast">the shelf looks different in person</div>
+
+<script>
+  // ══════════════════════════════
+  // PIXEL GRID — CSS mosaic shelf scene
+  // ══════════════════════════════
+  const canvas = document.getElementById('pixelCanvas');
+  const COLS = 40, ROWS = 16;
+
+  // Color palette: warm room tones
+  const palette = {
+    wall:       '#cfc5ba',
+    wallDark:   '#c0b5a8',
+    shelf:      '#b5a898',
+    shelfFace:  '#a89888',
+    book1:      '#8a7060',
+    book2:      '#6a8878',
+    book3:      '#a87858',
+    bookSpine:  '#d4c8b8',
+    plant:      '#6a9060',
+    plantDark:  '#507048',
+    pot:        '#a08070',
+    mirror:     '#c8d8d8',
+    mirrorDark: '#a8b8bc',
+    mirrorFrm:  '#887868',
+    floor:      '#b8aa9c',
+    shadow:     '#a89888',
+    bg:         '#c8bfb4',
+  };
+
+  // Hand-coded pixel art — row by row, each entry = [colStart, colEnd, color]
+  // This represents: wall + shelf + books + plant + mirror
+  const scene = [];
+
+  // Fill everything with wall first
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      scene.push({ r, c, color: r > 11 ? palette.floor : palette.wall });
+    }
+  }
+
+  function setPixel(r, c, color) {
+    const idx = r * COLS + c;
+    if (scene[idx]) scene[idx].color = color;
+  }
+  function fillRect(r1, c1, r2, c2, color) {
+    for (let r = r1; r <= r2; r++)
+      for (let c = c1; c <= c2; c++)
+        setPixel(r, c, color);
+  }
+
+  // Wall variation
+  fillRect(0, 0, 11, 39, palette.wall);
+  for (let c = 0; c < 40; c++) {
+    if (c % 5 === 0) setPixel(3, c, palette.wallDark);
+    if (c % 7 === 1) setPixel(7, c, palette.wallDark);
+  }
+
+  // Floor
+  fillRect(12, 0, 15, 39, palette.floor);
+  fillRect(11, 0, 11, 39, palette.shadow);
+
+  // Shelf board (row 8, cols 8–36)
+  fillRect(8, 8, 8, 36, palette.shelf);
+  fillRect(9, 8, 9, 36, palette.shelfFace);
+
+  // Books on shelf
+  // Book 1 — tall dark red
+  fillRect(4, 10, 8, 12, palette.book1);
+  setPixel(4, 10, palette.bookSpine); setPixel(5, 10, palette.bookSpine);
+  // Book 2 — short teal
+  fillRect(6, 13, 8, 14, palette.book2);
+  setPixel(6, 13, palette.bookSpine);
+  // Book 3 — medium tan
+  fillRect(5, 15, 8, 17, palette.book3);
+  setPixel(5, 15, palette.bookSpine); setPixel(6, 15, palette.bookSpine);
+
+  // Plant (pothos)
+  fillRect(4, 29, 8, 31, palette.plant);
+  fillRect(3, 30, 4, 30, palette.plantDark);
+  setPixel(4, 28, palette.plantDark);
+  setPixel(3, 29, palette.plant);
+  setPixel(2, 30, palette.plantDark);
+  // Pot
+  fillRect(8, 29, 8, 32, palette.pot);
+
+  // Mirror (oval represented as rectangle with lighter center)
+  fillRect(2, 22, 8, 27, palette.mirrorFrm);
+  fillRect(3, 23, 7, 26, palette.mirror);
+  fillRect(4, 24, 6, 25, palette.mirrorDark);
+  // Mirror reflection glint
+  setPixel(3, 23, palette.bg);
+
+  // Render pixels
+  scene.forEach(({ r, c, color }) => {
+    const cell = document.createElement('div');
+    cell.className = 'px';
+    cell.style.background = color;
+    canvas.appendChild(cell);
+  });
+
+  // Ambient noise flicker — randomly dim 1-2 pixels every few seconds
+  function flicker() {
+    const cells = canvas.children;
+    const idx = Math.floor(Math.random() * cells.length);
+    const orig = cells[idx].style.background;
+    cells[idx].style.background = '#b8b0a8';
+    setTimeout(() => { cells[idx].style.background = orig; }, 80);
+    setTimeout(flicker, 800 + Math.random() * 2400);
+  }
+  setTimeout(flicker, 3000);
+
+  // ══════════════════════════════
+  // GLITCH 1 — MIRROR CLICK (repeatable; hint on 3rd click)
+  // ══════════════════════════════
+  const mirrorRegion = document.getElementById('mirrorRegion');
+  const mirrorOverlay = document.getElementById('mirrorOverlay');
+  const shelfToast   = document.getElementById('shelfToast');
+  let mirrorClickCount = 0;
+  let mirrorFound = false;
+
+  mirrorRegion.addEventListener('click', () => {
+    mirrorClickCount++;
+
+    // First click — mark as found for "both found" check
+    if (!mirrorFound) {
+      mirrorFound = true;
+      checkBothFound();
+    }
+
+    // Always open the overlay
+    mirrorOverlay.classList.add('open');
+
+    // On the 3rd click — show the hint toast after overlay closes
+    if (mirrorClickCount === 3) {
+      setTimeout(() => {
+        shelfToast.classList.add('show');
+        setTimeout(() => {
+          shelfToast.style.transition = 'opacity 2s';
+          shelfToast.style.opacity = '0';
+          setTimeout(() => {
+            shelfToast.classList.remove('show');
+            shelfToast.style.transition = '';
+            shelfToast.style.opacity = '';
+          }, 2000);
+        }, 3500);
+      }, 600);
+    }
+  });
+
+  mirrorOverlay.addEventListener('click', () => {
+    mirrorOverlay.classList.remove('open');
+  });
+
+  // ══════════════════════════════
+  // GLITCH 2 — TEXT WORD CLICK
+  // The Cyrillic 'а' in "dreаms" is in the HTML — 
+  // here we target the sentence span directly
+  // ══════════════════════════════
+  const glitchWord = document.getElementById('glitchWord');
+  const sentenceNormal = document.getElementById('sentenceNormal');
+  const sentenceReplaced = document.getElementById('sentenceReplaced');
+  let wordFound = false;
+
+  glitchWord.addEventListener('click', () => {
+    if (wordFound) return;
+    wordFound = true;
+    glitchWord.classList.add('clicked'); // stops animation, locks to italic
+
+    // Swap the sentence
+    sentenceNormal.classList.add('hide');
+    sentenceReplaced.classList.add('show');
+    checkBothFound();
+  });
+
+  // ══════════════════════════════
+  // BOTH FOUND — subtle page response
+  // ══════════════════════════════
+  function checkBothFound() {
+    if (mirrorFound && wordFound) {
+      // The page subtly acknowledges — body gets a very faint warm tint
+      setTimeout(() => {
+        document.body.style.transition = 'background 4s';
+        document.body.style.background = '#f5eeea';
+      }, 800);
+
+      // Tab title flickers once
+      setTimeout(() => {
+        document.title = 'Margin Notes — she doesn\'t see it';
+        setTimeout(() => {
+          document.title = 'Margin Notes — Getting Settled';
+        }, 2500);
+      }, 1200);
+    }
+  }
+
+  // ══════════════════════════════
+  // PAGE TITLE DRIFT (idle)
+  // ══════════════════════════════
+  let titleDrifted = false;
+  setTimeout(() => {
+    if (!titleDrifted) {
+      titleDrifted = true;
+      document.title = 'Margin Notes — are you looking at the mirror';
+      setTimeout(() => {
+        document.title = 'Margin Notes — Getting Settled';
+      }, 3000);
+    }
+  }, 20000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    const labels = {
+      'home':    'not found',
+      'about':   'Mara',
+      'archive': 'come back later'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.textContent = label;
+        tooltip.classList.add('visible');
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

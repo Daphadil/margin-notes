@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Source+Sans+3:wght@300;400&display=swap');
+
+  :root {
+    --ink: #2a2420;
+    --ink-light: #5c504a;
+    --paper: #f7f3ee;
+    --rule: #d9d0c5;
+    --fade: #9a8e86;
+    --dim: #1a1614;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── DARK STAGE — the blog goes dark first ── */
+  body {
+    background: var(--dim);
+    color: var(--paper);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 3s ease, color 3s ease;
+    overflow: hidden;
+  }
+
+  body.lit {
+    background: var(--paper);
+    color: var(--ink);
+    overflow: auto;
+    justify-content: flex-start;
+  }
+
+  /* ── DARK SCREEN — first thing player sees ── */
+  #darkScreen {
+    position: fixed;
+    inset: 0;
+    background: #0e0c0a;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 2s ease;
+  }
+
+  #darkScreen.gone {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The single line — types itself in */
+  #singleLine {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(247, 243, 238, 0.0);
+    letter-spacing: 0.02em;
+    text-align: center;
+    max-width: 480px;
+    padding: 0 2rem;
+    transition: color 0.1s;
+    min-height: 2em;
+  }
+
+  /* Cursor blink while typing */
+  #cursor {
+    display: inline-block;
+    width: 1px;
+    height: 1.1em;
+    background: rgba(247,243,238,0.6);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.9s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  #cursor.done { animation: none; opacity: 0; }
+
+  /* ── FULL PAGE — revealed after dark screen ── */
+  #fullPage {
+    width: 100%;
+    opacity: 0;
+    transition: opacity 2s ease;
+    pointer-events: none;
+  }
+
+  #fullPage.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 2.5rem 0 2rem;
+    text-align: center;
+  }
+  .blog-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .blog-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+  nav {
+    margin-top: 1.2rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    margin: 0 1rem;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  .post-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    padding: 3.5rem 0 5rem;
+  }
+  .date-strip {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    padding-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--rule);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+  .date-strip .day {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #d9d0c5;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .post { flex: 1; min-width: 0; }
+
+  .post-category {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8b3a3a;
+    margin-bottom: 0.6rem;
+  }
+
+  .post h1 {
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+  }
+
+  .post-meta {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--ink-light);
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ── MARA'S VOICE — real this time. Tired but present. ── */
+  .post p {
+    margin-bottom: 1.4rem;
+    color: var(--ink);
+    line-height: 1.85;
+  }
+
+  /* Fragments — she's still finding her sentences */
+  .fragment {
+    color: var(--ink-light);
+    font-style: italic;
+    font-size: 0.95em;
+    line-height: 2;
+    margin-bottom: 1rem;
+  }
+
+  /* The final lines — addressed to herself in the past */
+  .closing {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .closing p {
+    color: var(--ink);
+    font-style: italic;
+    line-height: 2.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .closing p:last-child {
+    margin-bottom: 0;
+    color: var(--ink-light);
+    font-size: 0.94em;
+  }
+
+  /* ── COMMENTS ── */
+  .comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .comments-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.5rem;
+  }
+  .comment {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+  .comment-author {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 0.25rem;
+  }
+  .comment-author .timestamp {
+    font-weight: 300;
+    margin-left: 0.5rem;
+    opacity: 0.6;
+    font-size: 0.7rem;
+  }
+  .comment p {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  /* ── ENDING CARD ── */
+  .ending-card {
+    margin-top: 5rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .ending-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rule);
+    margin-bottom: 1rem;
+  }
+  .ending-title {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--fade);
+    margin-bottom: 0.5rem;
+  }
+  .ending-note {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: var(--rule);
+    letter-spacing: 0.06em;
+    margin-bottom: 2rem;
+  }
+  .restart-link {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .restart-link:hover {
+    color: var(--ink);
+    border-color: var(--ink-light);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--rule);
+  }
+
+  /* ── PAPER TEXTURE (restored — she's back) ── */
+  body.lit::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV TOOLTIPS ── */
+  .nav-tooltip {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--ink-light, #5c504a);
+    background: var(--paper, #f7f3ee);
+    border: 1px solid var(--rule, #d9d0c5);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+    transform: translate(14px, -50%);
+  }
+  .nav-tooltip.visible { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<!-- ── DARK SCREEN — first thing player sees ── -->
+<div id="darkScreen">
+  <div id="singleLine"><span id="typedText"></span><span id="cursor"></span></div>
+</div>
+
+<!-- ── FULL PAGE — revealed after ── -->
+<div id="fullPage">
+
+  <header>
+    <div class="container">
+      <div class="blog-title">Margin Notes</div>
+      <div class="blog-subtitle">a place for small things</div>
+          <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Archive</a>
+    </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="post-wrapper">
+
+      <div class="date-strip">
+        <span class="day">30</span>
+        Jun<br>2024
+      </div>
+
+      <article class="post">
+        <div class="post-category">Still Here</div>
+        <h1>Outside</h1>
+        <div class="post-meta">by Mara &nbsp;·&nbsp; 6 readers</div>
+
+        <p>I don't know how to write this. I've started it four times. The other three are deleted — they were too long, too explanatory, too much like I was trying to convince myself something had happened when I'm not sure I'm ready to say what happened.</p>
+
+        <p>So I'm going to write it small.</p>
+
+        <p class="fragment">I left the apartment this morning with one bag and Gerald.</p>
+
+        <p class="fragment">I am writing this from a coffee shop I've never been to before, in a neighborhood I don't know.</p>
+
+        <p class="fragment">The light here is different. I keep noticing that. I don't know yet if that's good.</p>
+
+        <p>I'm not going to explain the last few months. Not here, not yet. Maybe not ever in a way that would make sense written down. There are things that happened that I understand and things that happened that I don't, and I've decided it's okay to hold both of those at the same time without resolving them.</p>
+
+        <p>What I know: I heard something. I wrote something, or something wrote it through me. And then I left.</p>
+
+        <p>Gerald is on the table next to my coffee. He looks the same. He looks fine. I've been checking on him every few minutes like he might disappear, but he's just sitting there putting out leaves the way he always has, not knowing anything is different. I think that's the right approach.</p>
+
+        <!-- Final section — addressed to herself in the past, closing Post 3's loop -->
+        <div class="closing">
+          <p>I've been thinking about something I wrote a while ago. I said I was writing it so you'd know what to look for.</p>
+
+          <p>I think you found it. I think something found it for you.</p>
+
+          <p>You asked me once — you didn't write it down, but you thought it, I remember — whether the building was just breathing. That's the word you used. Breathing.</p>
+
+          <p>It wasn't. But you already know that now.</p>
+
+          <p>Take the plant. Don't look at the ceiling. Walk out the front door and don't count your steps and don't look back at the window, even if you think you see something.</p>
+
+          <p>You stayed too long. I know. So did I. But we're outside now, and the coffee here is good, and the light is different, and that's enough for today.</p>
+
+          <p>That's enough.</p>
+        </div>
+
+        <!-- Comments -->
+        <div class="comments">
+          <div class="comments-title">2 comments</div>
+
+          <div class="comment">
+            <div class="comment-author">lily_m <span class="timestamp">June 30 · 2:18 pm</span></div>
+            <p>mara. oh thank god. please text me when you can. i've been so worried. wherever you are it sounds like you needed to go there. i'm glad you have gerald.</p>
+          </div>
+
+          <!-- The anon commenter — appears after reader scrolls to bottom -->
+          <div class="comment" id="anonComment" style="opacity:0;transition:opacity 1.2s ease;">
+            <div class="comment-author">anon <span class="timestamp" id="anonTimestamp"></span></div>
+            <p><span id="cozyText"></span><span id="cozyCursor" style="display:inline-block;width:1px;height:1em;background:currentColor;margin-left:1px;vertical-align:text-bottom;opacity:0;"></span></p>
+          </div>
+
+        </div>
+
+        <!-- Ending card -->
+        <div class="ending-card">
+          <div class="ending-label">Ending</div>
+          <div class="ending-title">Aware</div>
+          <div class="ending-note">You saw her. That was enough.</div>
+          <a href="post1.html" class="restart-link">begin again →</a>
+        </div>
+
+      </article>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      margin notes &nbsp;·&nbsp; est. 2021 &nbsp;·&nbsp; no rights reserved
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ══════════════════════════════════
+  // DARK SCREEN — types the single line, then fades
+  // ══════════════════════════════════
+  const typedText  = document.getElementById('typedText');
+  const cursor     = document.getElementById('cursor');
+  const darkScreen = document.getElementById('darkScreen');
+  const fullPage   = document.getElementById('fullPage');
+
+  const line = "I don't know how long I was in there.";
+
+  let charIndex = 0;
+
+  // Brief pause, then start typing
+  setTimeout(() => {
+    const typeInterval = setInterval(() => {
+      if (charIndex < line.length) {
+        typedText.textContent += line[charIndex];
+        // Reveal text color gradually as it types
+        const progress = charIndex / line.length;
+        const opacity  = 0.3 + progress * 0.6;
+        typedText.style.color = `rgba(247,243,238,${opacity})`;
+        charIndex++;
+      } else {
+        // Typing done
+        clearInterval(typeInterval);
+        cursor.classList.add('done');
+
+        // Hold for a moment, then transition to full page
+        setTimeout(() => {
+          // Fade out dark screen
+          darkScreen.classList.add('gone');
+
+          // Fade in full page underneath
+          document.body.classList.add('lit');
+          fullPage.classList.add('visible');
+
+          // Remove dark screen from flow after transition
+          setTimeout(() => {
+            darkScreen.style.display = 'none';
+          }, 2200);
+
+        }, 2400);
+      }
+    }, 52); // typing speed — slightly irregular feel
+  }, 1000);
+
+
+  // ══════════════════════════════════
+  // ANON COMMENT — appears 2s after reader reaches bottom, types "cozy."
+  // ══════════════════════════════════
+  (function() {
+    const anonComment   = document.getElementById('anonComment');
+    const anonTimestamp = document.getElementById('anonTimestamp');
+    const cozyText      = document.getElementById('cozyText');
+    const cozyCursor    = document.getElementById('cozyCursor');
+    let triggered = false;
+
+    function formatTimestamp(date) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'];
+      const month = months[date.getMonth()];
+      const day   = date.getDate();
+      let hours   = date.getHours();
+      const mins  = String(date.getMinutes()).padStart(2, '0');
+      const ampm  = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12 || 12;
+      return `${month} ${day} · ${hours}:${mins} ${ampm}`;
+    }
+
+    function typeWord(word, el, cursorEl, speed, onDone) {
+      let i = 0;
+      // Show cursor blinking before typing starts
+      cursorEl.style.opacity = '1';
+      cursorEl.style.animation = 'blink 0.9s step-end infinite';
+      const interval = setInterval(() => {
+        if (i < word.length) {
+          el.textContent += word[i];
+          i++;
+        } else {
+          clearInterval(interval);
+          // Cursor lingers briefly then fades
+          setTimeout(() => {
+            cursorEl.style.animation = 'none';
+            cursorEl.style.opacity = '0';
+            if (onDone) onDone();
+          }, 800);
+        }
+      }, speed);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !triggered) {
+          triggered = true;
+          setTimeout(() => {
+            // Stamp timestamp and fade comment container in
+            anonTimestamp.textContent = formatTimestamp(new Date());
+            anonComment.style.opacity = '1';
+            // Small pause then start typing
+            setTimeout(() => {
+              typeWord('cozy.', cozyText, cozyCursor, 120);
+            }, 400);
+          }, 2000);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const endingCard = document.querySelector('.ending-card');
+    if (endingCard) observer.observe(endingCard);
+  })();
+
+  // ══════════════════════════════════
+  // TAB TITLE
+  // ══════════════════════════════════
+
+  // Starts dark while on the dark screen
+  document.title = 'Margin Notes';
+
+  // When page reveals, title settles
+  setTimeout(() => {
+    document.title = 'Margin Notes — Outside';
+  }, 6000);
+
+  // Long idle — quiet final drift
+  setTimeout(() => {
+    document.title = 'Margin Notes — a place for small things';
+  }, 45000);
+</script>
+
+
+<script>
+  // ── NAV TOOLTIPS ──
+  (function() {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'nav-tooltip';
+    document.body.appendChild(tooltip);
+
+    const labels = {
+      'home':    'outside',
+      'about':   'Mara',
+      'archive': '404 error'
+    };
+
+    document.querySelectorAll('nav a').forEach(link => {
+      const key = link.textContent.trim().toLowerCase();
+      const label = labels[key];
+      if (!label) return;
+
+      link.addEventListener('mouseenter', (e) => {
+        tooltip.textContent = label;
+        tooltip.classList.add('visible');
+      });
+
+      link.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top  = e.clientY + 'px';
+      });
+
+      link.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
